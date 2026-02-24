@@ -1,4 +1,5 @@
 window.addEventListener('DOMContentLoaded', () => {
+    //On récupère d'abord tout les élements avec laquelle nous aurons des interactions
     const button = document.getElementById('button');
     const add = document.getElementById('add');
     const del = document.getElementById('del');
@@ -6,6 +7,14 @@ window.addEventListener('DOMContentLoaded', () => {
     const currentSection = document.getElementById('currenttask');
     currentSection.innerHTML = '';
 
+    /**
+     * Fonction asynchrone permettant de mettre à jour le json avec des tâches déjà existant (PUT)
+     * @param {int} id
+     * @param {string} title
+     * @param {string} description
+     * @param {boolean} done
+     * @returns Le nouveau json modifié
+     */
     async function updateTask(id, title, description, done){
         const response = await fetch(`/todo/api/v1.0/tasks/${id}`, {
             method: 'PUT',
@@ -19,6 +28,11 @@ window.addEventListener('DOMContentLoaded', () => {
 
         return response.json();
     }
+    /**
+     * Fonction qui déplace une tâche existante dans la section current
+     * @param {json} task 
+     * @param {HTMLElement} section 
+     */
     function taskToCurrent(task, section){
         if (section.innerHTML !== ''){
             if (!confirm("Une tâche est en cours, écraser le formulaire ?")){
@@ -81,6 +95,10 @@ window.addEventListener('DOMContentLoaded', () => {
         section.appendChild(doneTask);
         section.appendChild(buttonValid);
     }
+    /**
+     * Fonction qui affiche chaque tâche existante du json pour l'afficher dans le tasksContainer
+     * @param {list} list 
+     */
     function renderTasks(list) {
         tasksContainer.innerHTML = '';
         if (!list.length) {
@@ -102,6 +120,9 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    /**
+     * Fonction asynchrone qui charge les tâches du json pour pouvoir les afficher via renderTasks()
+     */
     async function fetchTasks() {
         try {
             const response = await fetch('/todo/api/v1.0/tasks/data');
@@ -115,7 +136,14 @@ window.addEventListener('DOMContentLoaded', () => {
             tasksContainer.textContent = 'Impossible de charger les tâches.';
         }
     }
-
+    
+    /**
+     * Fonction asynchrone ajoutant une tâche enregistré au json (POST)
+     * @param {string} title 
+     * @param {string} description 
+     * @param {boolean} done 
+     * @returns retourne le nouveau fichier json avec les nouvelles informations
+     */
     async function createTask(title, description, done) {
         const response = await fetch('/todo/api/v1.0/tasks', {
             method: 'POST',
@@ -130,6 +158,10 @@ window.addEventListener('DOMContentLoaded', () => {
         return response.json();
     }
 
+    /**
+     * Fonction qui ajoute une tâche dans la section courante après avoir appuyer sur le bouton +
+     * @param {HTMLElement} section
+     */
     function createEmptyTask(section) {
         if (section.innerHTML!=''){
             if (!confirm("Une tâche est en cours, voulez-vous l'écraser?")){
@@ -187,6 +219,11 @@ window.addEventListener('DOMContentLoaded', () => {
         section.appendChild(buttonValid);
     }
 
+    /**
+     * Fonction asynchrone supprimant la tâche sélectionner (celle du currentSection) via son id (DELETE)
+     * @param {int} id 
+     * @returns le nouveau json avec la tâche supprimé
+     */
     async function deleteTask(id){
         const response = await fetch(`/todo/api/v1.0/tasks/${id}`, {
             method: 'DELETE'
@@ -199,6 +236,10 @@ window.addEventListener('DOMContentLoaded', () => {
         return response.json();
     }
 
+    /**
+     * Supprime la tâche qui est dans la currentSection
+     * @param {HTMLElement} section
+     */
     function deleteCurrentTask(section){
         if (section.innerHTML == ''){
             alert('Aucune tâche n\'à été créer ou sélectionner. Impossible de supprimer!')
